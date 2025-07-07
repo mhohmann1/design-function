@@ -62,7 +62,8 @@ with torch.no_grad():
 
         points, conditions = die, torch.zeros(bs)
 
-        # points, conditions = punch, torch.ones(bs)
+        if args.punch:
+            points, conditions = punch, torch.ones(bs)
 
         points = points.to(device)
         one_hot_encoded = torch.nn.functional.one_hot(conditions.long(), num_classes=2).to(device)

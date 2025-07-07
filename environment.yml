@@ -354,4 +354,3 @@ dependencies:
       - tensorboard==2.19.0
       - tensorboard-data-server==0.7.2
       - trimesh==4.6.0
-prefix: /home/michael/anaconda3/envs/design-function

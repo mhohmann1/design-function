@@ -10,9 +10,8 @@ import random
 import re
 
 class Data(Dataset):
-    def __init__(self, data_dir, cond_dir, augmentation, num_points, get_scale=False):
+    def __init__(self, data_dir, augmentation, num_points, get_scale=False):
         self.data_dir = data_dir
-        self.cond_dir = cond_dir
         self.paths = []
         self.num_points = num_points
         self.augmentation = augmentation

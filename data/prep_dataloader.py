@@ -5,7 +5,7 @@ import torch
 torch.manual_seed(args.seed)
 
 def get_dataloaders(Data, augmentation=True):
-    dataset = Data(data_dir=args.path, cond_dir=args.cond_path, augmentation=augmentation, num_points=args.points)
+    dataset = Data(data_dir=args.path, augmentation=augmentation, num_points=args.points)
     train_size = int(args.train_size * len(dataset))
     valid_size = int(args.val_size * len(dataset))
     test_size = len(dataset) - train_size - valid_size

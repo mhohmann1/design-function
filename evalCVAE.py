@@ -69,7 +69,11 @@ with torch.no_grad():
         one_hot_encoded = torch.nn.functional.one_hot(conditions.long(), num_classes=2).to(device)
         part = part.to(device)
 
-        x_pred, mean, log_var, z = model(points, one_hot_encoded)
+        if args.stages:
+            x_pred, mean, log_var, z = model(part, one_hot_encoded)
+        else:
+            x_pred, mean, log_var, z = model(points, one_hot_encoded)
+
         loss, rec_loss, lat_loss = criterion.calculate(x_pred, points, mean, log_var)
 
         loss_emd = emd_approx(x_pred, points)

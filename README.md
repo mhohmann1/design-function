@@ -42,12 +42,12 @@ python trainCVAE.py --stages
 
 # Evaluation
 
-To evaluate the model:
+To evaluate the stages model:
 ```
-python evalCVAE.py
+python evalCVAE.py --stages
 ```
 
 To calculate JSD, MMD, COV: 
 ```
-python evalCVAE.py --eval_metrics
+python evalCVAE.py --stages --eval_metrics
 ```

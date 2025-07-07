@@ -60,7 +60,7 @@ with torch.no_grad():
     for idx, (die, punch, part, bhf) in tqdm(enumerate(test_loader)):
         bs = part.size(0)
 
-        points, conditions = die, torch.zeros(bs)
+        points, conditions = die, torch.zeros(bs) # default
 
         if args.punch:
             points, conditions = punch, torch.ones(bs)

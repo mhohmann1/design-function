@@ -60,7 +60,6 @@ with torch.no_grad():
     for idx, (die, punch, part, bhf) in tqdm(enumerate(test_loader)):
         bs = part.size(0)
 
-
         points, conditions = die, torch.zeros(bs)
 
         # points, conditions = punch, torch.ones(bs)
@@ -129,4 +128,3 @@ if args.eval_metrics:
     df.loc["Mean"] = df.mean()
     df.loc["Std Dev"] = df.std()
     print(df)
-

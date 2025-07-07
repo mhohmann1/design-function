@@ -22,7 +22,7 @@ https://opara.zih.tu-dresden.de/handle/123456789/1526
 ```
 Unzip the files to the directory: ./data/dataset
 
-Preprocess the dataset with :
+Preprocess the dataset with:
 ```
  python prepData.py
 ```

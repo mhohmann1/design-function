@@ -81,7 +81,7 @@ with torch.no_grad():
             tot_test_loss += loss.item() * bs
             tot_emd_loss += torch.mean(loss_emd) * bs
 
-        tag = "matrize" if conditions[0] == 0. else "stempel" if conditions[0] == 1. else "none"
+        tag = "die" if conditions[0] == 0. else "punch" if conditions[0] == 1. else "none"
 
         for n in range(bs):
             if n < 4:

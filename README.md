@@ -16,7 +16,8 @@ conda env update -n design-function --file environment.yml
 # Dataset
 ```
 Download the dataset @ https://opara.zih.tu-dresden.de/handle/123456789/1526
-Unzip the files to ./data/dataset/
+Unzip the files to ./data/dataset
+To preprocess the dataset, run python prepData.py
 ```
 
 # Training

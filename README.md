@@ -32,5 +32,5 @@ Then run: python trainCVAE.py --stages
 
 ```
 python evalCVAE.py
-To calculate JSD, MMD, COV: --eval_metrics
+To calculate JSD, MMD, COV: python evalCVAE.py --eval_metrics
 ```

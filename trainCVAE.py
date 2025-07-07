@@ -44,14 +44,14 @@ model = CVAE(num_points=args.points, z_dim=args.latent_size, c_dim=args.num_cond
 optimizer = torch.optim.Adam(model.parameters(), lr=args.learning_rate)
 
 # scheduler = StepLR(optimizer, step_size=args.epochs // 4, gamma=0.5)
-# scheduler = ReduceLROnPlateau(optimizer, factor=0.9, patience=30, min_lr=1e-6)
+scheduler = ReduceLROnPlateau(optimizer, factor=0.9, patience=30, min_lr=1e-6)
 # scheduler = ExponentialLR(optimizer, gamma=0.999)
 
 if args.finetune:
     print(20 * "-")
     print("Finetune Mode")
     print(20*"-")
-    path = f"saved_model/stages/1740835828/model.tar"
+    path = f"saved_model/stages/{args.save_path}/model.tar"
     checkpoint = torch.load(path, weights_only=True)
     model.load_state_dict(checkpoint["model_state_dict"])
     optimizer.load_state_dict(checkpoint["optimizer_state_dict"])
@@ -65,7 +65,6 @@ if args.finetune:
 
 
 BEST_LOSS = np.inf
-train_hist, test_hist = [], []
 BEST_EPOCH = 0
 
 for epoch in tqdm(range(1, args.epochs + 1)):
@@ -79,11 +78,9 @@ for epoch in tqdm(range(1, args.epochs + 1)):
 
         points = torch.cat((die[:hlf], punch[:hlf]), dim=0)
         conditions = torch.cat((torch.zeros(hlf), torch.ones(hlf)), dim=0)
-        # points, conditions = random.choice([(die, torch.tensor(0, dtype=torch.float32)), (punch, torch.tensor(1, dtype=torch.float32))])  # Matrize -> 0, Stempel -> 1
 
         points = points.to(device)
         one_hot_encoded = torch.nn.functional.one_hot(conditions.long(), num_classes=2).to(device)
-        # torch.cat((one_hot_encoded, bhf.unsqueeze(1).to(device)), dim=1)
         part = part.to(device)
 
         x_pred, mean, log_var, z = model(points, one_hot_encoded)
@@ -107,8 +104,6 @@ for epoch in tqdm(range(1, args.epochs + 1)):
     mean_train_rec = tot_rec_loss / len_dataset
     mean_train_latent = tot_lat_loss / len_dataset
 
-    train_hist.append([mean_train_loss, mean_train_rec, mean_train_latent])
-
     len_dataset = len(valid_loader.dataset)
     model.eval()
     with torch.no_grad():
@@ -119,8 +114,6 @@ for epoch in tqdm(range(1, args.epochs + 1)):
 
             points = torch.cat([die[:hlf], punch[:hlf]], dim=0)
             conditions = torch.cat([torch.zeros(hlf), torch.ones(hlf)], dim=0)
-
-            # points, conditions = random.choice([(die, torch.tensor(0, dtype=torch.float32)), (punch, torch.tensor(1, dtype=torch.float32))])  # Matrize -> 0, Stempel -> 1
 
             points = points.to(device)
             one_hot_encoded = torch.nn.functional.one_hot(conditions.long(), num_classes=2).to(device)
@@ -145,8 +138,6 @@ for epoch in tqdm(range(1, args.epochs + 1)):
     mean_test_rec = tot_rec_loss / len_dataset
     mean_test_latent = tot_lat_loss / len_dataset
 
-    test_hist.append([mean_test_loss, mean_test_rec, mean_test_latent])
-
     loss_comparison = mean_test_loss
 
     if loss_comparison < BEST_LOSS:
@@ -170,12 +161,6 @@ for epoch in tqdm(range(1, args.epochs + 1)):
     writer.add_scalar("Loss/Reconstruction_Validation", mean_test_rec, epoch)
     writer.add_scalar("Loss/KL_Validation", mean_test_latent, epoch)
 
-    train_hist_ = np.array(train_hist)
-    test_hist_ = np.array(test_hist)
-
-    np.save(f"{OUT_PATH}/train_hist.npy", train_hist_)
-    np.save(f"{OUT_PATH}/test_hist.npy", test_hist_)
-
     if epoch == 1 or epoch % 10 == 0 or epoch == args.epochs:
         z_path = f"{OUT_PATH}/latent/latent_space_{epoch}.png"
         visualize_z(latent_z, z_path)
@@ -192,15 +177,9 @@ for epoch in tqdm(range(1, args.epochs + 1)):
         pred_img_tensor = trans(pred_img)
         writer.add_image("Prediction", pred_img_tensor, epoch)
 
-        plot_loss(train_hist_[:, 0], test_hist_[:, 0], "ELBO", save_img=True, show_img=False,
-                  path=f"{OUT_PATH}/loss/elbo.png")
-        plot_loss(train_hist_[:, 1], test_hist_[:, 1], "Chamfer Distance", save_img=True, show_img=False,
-                  path=f"{OUT_PATH}/loss/rec.png")
-        plot_loss(train_hist_[:, 2], test_hist_[:, 2], "KL Divergence", save_img=True, show_img=False,
-                  path=f"{OUT_PATH}/loss/kld.png")
-
-    # scheduler.step(mean_test_loss)
+    # scheduler.step()
+    scheduler.step(mean_test_loss)
 
 writer.close()
 
-# print("Finale Learning Rate:", optimizer.param_groups[0]["lr"])
+print("Finale Learning Rate:", optimizer.param_groups[0]["lr"])

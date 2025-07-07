@@ -24,7 +24,8 @@ To preprocess the dataset, run: python prepData.py
 # Training
 
 ```
-python trainCVAE.py
+To train the stages model, first run: python trainCVAE.py
+Then run: python trainCVAE.py --stages
 ```
 
 # Evaluation

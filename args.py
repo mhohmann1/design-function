@@ -17,5 +17,6 @@ parser.add_argument("--val_size", default=0.15, help="Ratio of Training Samples.
 parser.add_argument("--finetune", action="store_true", help="Resume training from last checkpoint")
 parser.add_argument("--save_path", default="stages_model", help="Save path/dir.", type=str)
 parser.add_argument("--sum_mean", default="mean", help="Sum or mean of loss function.", type=str)
+parser.add_argument("--eval_metrics", action="store_true", help="Evaluate the model metrics (JSD,COV,MMD).")
 
 args = parser.parse_args()

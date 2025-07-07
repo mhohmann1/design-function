@@ -3,12 +3,10 @@ from sklearn import manifold
 from args import args
 
 def save_single_image(points_pred, points_true=None, filename="point_cloud.png", min=None, max=None):
-
     if min is not None and max is not None:
         points_pred = points_pred * (max - min) + min
         if points_true is not None:
             points_true = points_true * (max - min) + min
-
     fig = plt.figure(figsize=(8, 8))
     ax = fig.add_subplot(111, projection='3d')
     ax.scatter(points_pred[:, 0], points_pred[:, 1], points_pred[:, 2], c="grey", label="Reconstructed")
@@ -101,7 +99,6 @@ def save_as_image(points_pred, points_true=None, filename="point_cloud.png", min
     ax1.set_title("3D View")
     ax1.legend(loc="upper right")
 
-    # XY-Projektion
     ax2 = fig.add_subplot(222)
     ax2.scatter(points_pred[:, 0], points_pred[:, 1], c="grey", label="Predicted")
     if points_true is not None:
@@ -111,18 +108,17 @@ def save_as_image(points_pred, points_true=None, filename="point_cloud.png", min
     ax2.set_title("XY Projection")
     ax2.legend(loc="upper right")
 
-    # YZ-Projektion
+
     ax3 = fig.add_subplot(223)
     ax3.scatter(points_pred[:, 1], points_pred[:, 2], c="grey", label="Predicted")
     if points_true is not None:
         ax3.scatter(points_true[:, 1], points_true[:, 2], c="yellow", alpha=0.3, label="True")
-    # ax3.set_ylim([0.25, 0.75])
+
     ax3.set_xlabel("Y")
     ax3.set_ylabel("Z")
     ax3.set_title("YZ Projection")
     ax3.legend(loc="upper right")
 
-    # XZ-Projektion
     ax4 = fig.add_subplot(224)
     ax4.scatter(points_pred[:, 0], points_pred[:, 2], c="grey", label="Predicted")
     if points_true is not None:

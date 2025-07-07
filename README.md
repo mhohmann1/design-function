@@ -31,4 +31,5 @@ python trainCVAE.py
 
 ```
 python evalCVAE.py
+To calculate JSD, MMD, COV: --eval_metrics
 ```

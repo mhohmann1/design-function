@@ -47,9 +47,9 @@ optimizer = torch.optim.Adam(model.parameters(), lr=args.learning_rate)
 scheduler = ReduceLROnPlateau(optimizer, factor=0.9, patience=30, min_lr=1e-6)
 # scheduler = ExponentialLR(optimizer, gamma=0.999)
 
-if args.finetune:
+if args.stages:
     print(20 * "-")
-    print("Finetune Mode")
+    print("Second Stage")
     print(20*"-")
     path = f"saved_model/stages/{args.save_path}/model.tar"
     checkpoint = torch.load(path, weights_only=True)
@@ -83,7 +83,11 @@ for epoch in tqdm(range(1, args.epochs + 1)):
         one_hot_encoded = torch.nn.functional.one_hot(conditions.long(), num_classes=2).to(device)
         part = part.to(device)
 
-        x_pred, mean, log_var, z = model(points, one_hot_encoded)
+        if args.stages:
+            x_pred, mean, log_var, z = model(part, one_hot_encoded)
+        else:
+            x_pred, mean, log_var, z = model(points, one_hot_encoded)
+
         latent_z.append(z.detach().cpu().numpy())
         loss, rec_loss, lat_loss = criterion.calculate(x_pred, points, mean, log_var)
 
@@ -119,7 +123,10 @@ for epoch in tqdm(range(1, args.epochs + 1)):
             one_hot_encoded = torch.nn.functional.one_hot(conditions.long(), num_classes=2).to(device)
             part = part.to(device)
 
-            x_pred, mean, log_var, z = model(points, one_hot_encoded)
+            if args.stages:
+                x_pred, mean, log_var, z = model(part, one_hot_encoded)
+            else:
+                x_pred, mean, log_var, z = model(points, one_hot_encoded)
 
             loss, rec_loss, lat_loss = criterion.calculate(x_pred, points, mean, log_var)
 

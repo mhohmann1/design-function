@@ -14,7 +14,7 @@ parser.add_argument("--num_conditions", default=2, help="Number of conditions to
 parser.add_argument("--beta", default=1e-4, help="Beta factor (weight) of KLD in Loss.", type=float)
 parser.add_argument("--train_size", default=0.75, help="Ratio of Training Samples.", type=float)
 parser.add_argument("--val_size", default=0.15, help="Ratio of Training Samples.", type=float)
-parser.add_argument("--finetune", action="store_true", help="Resume training from last checkpoint")
+parser.add_argument("--stages", action="store_true", help="Train model in Second Stage.")
 parser.add_argument("--save_path", default="stages_model", help="Save path/dir.", type=str)
 parser.add_argument("--sum_mean", default="mean", help="Sum or mean of loss function.", type=str)
 parser.add_argument("--eval_metrics", action="store_true", help="Evaluate the model metrics (JSD,COV,MMD).")

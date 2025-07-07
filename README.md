@@ -23,11 +23,11 @@ To preprocess the dataset, run: python prepData.py
 # Training
 
 ```
-python train.py
+python trainCVAE.py
 ```
 
 # Evaluation
 
 ```
-python eval.py
+python evalCVAE.py
 ```

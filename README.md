@@ -15,22 +15,39 @@ conda activate design-function
 conda env update -n design-function --file environment.yml
 ```
 # Dataset
+
+Download the dataset: 
 ```
-Download the dataset: https://opara.zih.tu-dresden.de/handle/123456789/1526
+https://opara.zih.tu-dresden.de/handle/123456789/1526
+```
 Unzip the files to the directory: ./data/dataset
-To preprocess the dataset, run: python prepData.py
+
+Preprocess the dataset with :
+```
+ python prepData.py
 ```
 
 # Training
 
+To train the stages model, first run: 
+
 ```
-To train the stages model, first run: python trainCVAE.py
-Then run: python trainCVAE.py --stages
+python trainCVAE.py
+```
+
+Second run:
+```
+python trainCVAE.py --stages
 ```
 
 # Evaluation
 
+To evaluate the model:
 ```
 python evalCVAE.py
-To calculate JSD, MMD, COV: python evalCVAE.py --eval_metrics
+```
+
+To calculate JSD, MMD, COV: 
+```
+python evalCVAE.py --eval_metrics
 ```

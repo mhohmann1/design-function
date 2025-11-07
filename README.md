@@ -18,7 +18,7 @@ conda env update -n design-function --file environment.yml
 
 Download the dataset: 
 ```
-WILL BE UPDATED SOON
+https://doi.org/10.18419/DARUS-5158
 ```
 Unzip the files to the directory: ./data/dataset
 

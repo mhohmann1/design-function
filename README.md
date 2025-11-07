@@ -22,7 +22,7 @@ https://doi.org/10.18419/DARUS-5158
 ```
 Unzip the files to the directory: ./data/dataset
 
-Preprocess the dataset with:
+(Optional) Preprocess the dataset with:
 ```
  python prepData.py
 ```

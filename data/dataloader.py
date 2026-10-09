@@ -8,6 +8,7 @@ from data.data_utils import random_pc, random_rotation, random_translation
 from tqdm import tqdm
 import random
 import re
+import json
 
 class Data(Dataset):
     def __init__(self, data_dir, augmentation, num_points, get_scale=False):
@@ -30,20 +31,37 @@ class Data(Dataset):
                 self.global_min = np.minimum(self.global_min, file_min)
                 self.global_max = np.maximum(self.global_max, file_max)
 
+            with open(config_path=os.path.join(os.path.dirname(__file__), "scaling_values.json"), "r") as f:
+                scaling = json.load(f)
+
+            scaling["global_min"] = self.global_min.tolist()
+            scaling["global_max"] = self.global_max.tolist()
+
+            with open(config_path, "w") as f:
+                json.dump(scaling, f, indent=4)
+
             print(self.global_min, self.global_max)
 
         else:
-            self.global_min = np.array([0., 0., 0])
-            self.global_max = np.array([279.99963885 - 3.27888232e-04, 229.99968253 - 3.47547511e-04, 50.5 - 5.00000000e-01])
+            config_path = os.path.join(
+                os.path.dirname(__file__),
+                "scaling_values.json"
+            )
 
-            self.die_min = np.array([3.27888232e-04, 3.47547511e-04, 5.00000000e-01])
-            self.die_max = np.array([279.99963885, 229.99968253, 50.5])
+            with open(config_path, "r") as f:
+                scaling = json.load(f)
 
-            self.punch_min = np.array([1.22097060e-04, 2.58775917e-04, -5.04998589e+01])
-            self.punch_max = np.array([174.06161467, 99.06198772, -0.47961212])
+            self.global_min = np.array(scaling["global_min"])
+            self.global_max = np.array(scaling["global_max"])
 
-            self.part_min = np.array([0., 0., -54.3315239])
-            self.part_max = np.array([2.44548386e+02, 1.89805313e+02, 1.04953878e-01])
+            self.die_min = np.array(scaling["die_min"])
+            self.die_max = np.array(scaling["die_max"])
+
+            self.punch_min = np.array(scaling["punch_min"])
+            self.punch_max = np.array(scaling["punch_max"])
+
+            self.part_min = np.array(scaling["part_min"])
+            self.part_max = np.array(scaling["part_max"])
 
     def __len__(self):
         return len(self.paths)

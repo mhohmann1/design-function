@@ -23,7 +23,7 @@ conda env update -n design-function --file environment.yml
 # Code overview
 
 - `args.py`: command-line parameters and defaults.
-- `prepData.py`: raw-data preprocessing.
+- `prepData.py`: raw-data preprocessing for the previous dataset layout.
 - `data/dataloader.py` / `data/prep_dataloader.py`: loading, normalization, and splitting.
 - `models/cvae.py` / `models/encoder_decoder.py`: conditional variational autoencoder (CVAE).
 - `trainCVAE.py` / `evalCVAE.py`: training / evaluation and test-set inference.
@@ -35,16 +35,30 @@ Download the dataset:
 ```
 https://doi.org/10.18419/DARUS-5158
 ```
-Unzip the files to `data/dataset`. Each sample directory must contain `Data/01_Matrize_Viertel.npz`, `Data/03_Stempel_Viertel.npz`, and part files under `Data/Bauteil/*.npz`. NPZ files contain a `points` array of XYZ coordinates in millimeters.
+Unzip the dataset so that `parameters.csv` is directly inside `data/dataset` (or set `--path` to the directory containing it):
 
-If the NPZ files are not available, preprocess the raw STEP and XLSX files with:
+```text
+data/dataset/
+├── parameters.csv
+└── <folder>/
+    ├── tools/
+    │   ├── die.npz
+    │   ├── holder.npz
+    │   └── punch.npz
+    └── parts/
+        ├── part_15000.npz
+        └── ...
 ```
-python prepData.py
-```
+
+`parameters.csv` contains `folder`, `holder_force`, `min_thickness`, `radii1`, `radii2`, `cr`, `delta`, and `height`. Each `(folder, holder_force)` pair identifies one sample. NPZ files contain a `points` array of XYZ coordinates in millimeters. Samples with missing parts or tools are skipped with a warning.
+
+`PointCloudDataset` returns a dictionary with `die`, `holder`, `punch`, `part`, `folder`, `holder_force`, `min_thickness`, and `parameters` (in the order `radii1`, `radii2`, `cr`, `delta`, `height`). Its optional `split_file` accepts one relative part path per line, such as `<folder>/parts/part_15000.npz`. `num_points=None` loads all points; a positive integer samples that many points without replacement and raises an error if a cloud has too few points.
+
+The training scripts use the `Data` adapter, which returns `(die, punch, part, bhf)` and scales the holder force as `(holder_force - 15000) / 25000`. The published NPZ files can be loaded directly; `prepData.py` targets the previous layout and is not required for them.
 
 # Training
 
-The loader samples 2,048 points per surface and applies dataset-specific offsets and scaling defined in `data/dataloader.py`. Samples are split into approximately 75% training, 15% validation, and 10% test data.
+The loader samples 2,048 points per surface and applies the existing dataset-specific offsets and scaling from `data/scaling_values.json`. Each part/force combination is a separate sample. Geometry folders are split reproducibly using `--seed` into approximately 75% training, 15% validation, and 10% test data, keeping all force variants of a geometry in the same subset. These defaults are controlled by `--train_size` and `--val_size`; the remaining folders form the test set.
 
 Stage 1 learns to reconstruct tool surfaces, conditioned on tool types:
 
